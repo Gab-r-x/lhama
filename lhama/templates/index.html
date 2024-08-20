@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Steps</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .project-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .step-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .step-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .step-date {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="project-header">
+        <h1 id="project-title">Carregando Projeto...</h1>
+        <p id="project-desc"></p>
+    </div>
+    <div id="steps-container">
+        <!-- Cards dos Steps serão renderizados aqui -->
+    </div>
+</div>
+
+<script>
+    // Função para buscar dados do projeto e dos steps
+        async function fetchProjectAndSteps() {
+        try {
+            // Buscando dados do projeto
+            const projectResponse = await fetch('/api/v1/project/1');
+            const projectData = await projectResponse.json();
+
+            // Atualizando o título e a descrição do projeto na página
+            document.getElementById('project-title').innerText = projectData.proj_name;
+            document.getElementById('project-desc').innerText = projectData.proj_desc;
+
+            // Buscando dados dos steps
+            const stepsResponse = await fetch('/api/v1/step/');
+            const stepsData = await stepsResponse.json();
+
+            // Verifique os dados no console
+            console.log('Steps Data:', stepsData);
+
+            // Renderizando os cards dos steps
+            const stepsContainer = document.getElementById('steps-container');
+            
+            // Acesse stepsData.steps, pois os steps estão dentro dessa chave
+            if (Array.isArray(stepsData.steps)) {  // Verifica se stepsData.steps é um array
+                stepsData.steps.forEach(step => {
+                    const stepCard = document.createElement('div');
+                    stepCard.classList.add('step-card');
+
+                    // Criando o t07ítulo do step
+                    const stepTitle = document.createElement('h2');
+                    stepTitle.classList.add('step-title');
+                    stepTitle.innerText = step.step_name;
+
+                    // Criando a data de início do step
+                    const stepDate = document.createElement('p');
+                    stepDate.classList.add('step-date');
+                    stepDate.innerText = `Data de Início: ${new Date(step.created_at).toLocaleDateString()}`;
+
+                    // Adicionando título e data ao card
+                    stepCard.appendChild(stepTitle);
+                    stepCard.appendChild(stepDate);
+
+                    // Adicionando o card ao container
+                    stepsContainer.appendChild(stepCard);
+                });
+            } else {
+                console.error("Os dados dos steps não são um array:", stepsData);
+            }
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+        }
+    }
+
+
+    // Chamada da função ao carregar a página
+    window.onload = fetchProjectAndSteps;
+</script>
+
+</body>
+</html>

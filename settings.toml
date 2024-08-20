@@ -1,14 +1,14 @@
 [default]
 DEBUG = false
 SQLALCHEMY_DATABASE_URI = 'sqlite:///development.db'
-TITLE = "crypto-outdoor"
+TITLE = "lhama"
 SECRET_KEY = "jadkfbsdkjbfbh"
 PASSWORD_SCHEMES = ['pbkdf2_sha512', 'md5_crypt']
 EXTENSIONS = [
-    "crypto-outdoor.ext.database:init_app",
-    "crypto-outdoor.ext.commands:init_app",
-    "crypto-outdoor.ext.configuration:init_app",
-    "crypto-outdoor.ext.auth:init_app",
-    "crypto-outdoor.blueprints.restapi:init_app"
+    "lhama.ext.database:init_app",
+    "lhama.ext.commands:init_app",
+    "lhama.ext.configuration:init_app",
+    "lhama.ext.auth:init_app",
+    "lhama.blueprints.restapi:init_app"
 ]
 
