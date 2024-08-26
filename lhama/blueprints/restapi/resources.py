@@ -3,7 +3,6 @@ from flask_restful import Resource
 
 from ...models import Project, Step
 from ...ext.database import db
-from ..utils.utils import get_current_datetime_formatted
 from datetime import datetime
 
 
@@ -35,7 +34,20 @@ class ProjectItemResource(Resource):
         project = Project.query.filter_by(id=project_id).first() or abort(404)
         return jsonify(project.to_dict()
         )
-    
+    def put(self, project_id):
+        project = Project.query.filter_by(id=project_id).first() or abort(404)
+        
+        data = request.get_json()
+        if not data:
+            abort(400, description="No input data provided.")
+
+        # Atualizar os campos do projeto com base nos dados fornecidos
+        project.proj_name = data.get('proj_name', project.proj_name)
+        project.proj_desc = data.get('proj_desc', project.proj_desc)
+
+        db.session.commit()  # Salvar as alterações no banco de dados
+        return make_response(jsonify(project.to_dict()), 201)    
+        
 class StepResource(Resource):
     def get(self):
         steps = Step.query.all() or abort(204)
