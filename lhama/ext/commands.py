@@ -27,7 +27,7 @@ def populate_db():
             step_desc="Processo 01 Description",
             created_at=datetime(2024, 8, 19, 13, 0, 0),
             finished_at=datetime(2024, 8, 19, 15, 0, 0),
-            is_active=True,
+            is_active=False,
             data={"Recurso": "R$5milhoes", "Fonte": "Governo do Estado", "Área": "550m²", "Projeto":"https:americalatina.eng.br"}, 
             project_id=1
         )
@@ -38,14 +38,26 @@ def populate_db():
             step_desc="Processo 02 Description",
             created_at=datetime(2024, 8, 20, 13, 0, 0),
             finished_at=datetime(2024, 8, 20, 15, 0, 0),
-            is_active=True,
+            is_active=False,
             data={"Recurso": "R$8milhoes", "Fonte": "Recurso Prefeitura"}, 
+            project_id=1
+        )    
+
+    step3 = Step(
+            id=3,
+            step_name="Processo 03",
+            step_desc="Processo 03 Description",
+            created_at=datetime(2024, 8, 20, 13, 0, 0),
+            finished_at=datetime(2024, 8, 20, 15, 0, 0),
+            is_active=True,
+            data={"Link do projeto": "https://americalatina.eng.br", "Link da planilha": "https://americalatina.eng.br"}, 
             project_id=1
         )    
     
     db.session.bulk_save_objects(new_project)
     db.session.add(step1)
     db.session.add(step2)
+    db.session.add(step3)
     db.session.commit()
     return Project.query.all()
 
