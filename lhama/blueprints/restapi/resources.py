@@ -80,3 +80,18 @@ class StepItemResource(Resource):
         step = Step.query.filter_by(id=step_id).first() or abort(404)
         return jsonify(step.to_dict()
         )
+    def put(self, step_id):
+        step = Step.query.filter_by(id=step_id).first() or abort(404)
+        
+        data = request.get_json()
+        if not data:
+            abort(400, description="No input data provided.")
+
+        # Atualizar os campos do projeto com base nos dados fornecidos
+        step.proj_name = data.get('step_name', step.step_name)
+        step.proj_desc = data.get('step_desc', step.step_desc)
+        step.data = data.get('data', step.data)
+
+
+        db.session.commit()  # Salvar as alterações no banco de dados
+        return make_response(jsonify(step.to_dict()), 201)    

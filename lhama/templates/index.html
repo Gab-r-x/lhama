@@ -1,187 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Etapas de Projeto</title>
-    <style>
-        /* Estilos para os cards dos steps */
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Project Details</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+        <style>
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
         .step-card {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 8px 0;
-            cursor: pointer;
-            width: 50%;
+            margin-bottom: 20px;
+            position: relative;
         }
-
-        /* Estilos para o modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding-top: 60px;
+        .arrow {
+            left: 50%;
+            transform: translateX(50%);
+            top: 100%;
+            font-size: 2rem;
+            margin-top: -20px;
         }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            border-radius: 8px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Estilo para as chaves e valores do JSON */
-        .data-item {
-            margin: 8px 0;
-        }
-
-        .data-item span {
-            font-weight: bold;
+        .modal-header, .modal-body, .modal-footer {
+            text-align: center;
         }
     </style>
-</head>
-<body>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <h1 id="proj_name"></h1>
+            <p id="proj_desc"></p>
+            <p><strong>Contract:</strong> <span id="contract"></span></p>
 
-    <h1 id="project-title">Project Title</h1>
-    <p id="project-desc">Project Description</p>
+            <div id="steps-container"></div>
+        </div>
 
-    <div id="steps-container"></div>
-
-    <!-- Modal -->
-    <div id="stepModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modal-step-title">Processo:</h2>
-            <p id="modal-step-desc">Descrição:</p>
-            <p id="modal-step-created">Data de Início: </p>
-            <p id="modal-step-finished">Data de Término: </p>
-            <p id="modal-step-active">Está ativo? </p>
-            <div id="modal-step-data">
-                <h3>Dados do processo:</h3>
-                <div id="data-container"></div>
+        <!-- Modal -->
+        <div class="modal fade" id="stepModal" tabindex="-1"
+            aria-labelledby="stepModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="stepModalLabel">Step
+                            Details</h5>
+                        <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5 id="step_name"></h5>
+                        <p id="step_desc"></p>
+                        <p><strong>Start Date:</strong> <span
+                                id="started_at"></span></p>
+                        <p><strong>End Date:</strong> <span
+                                id="finished_at"></span></p>
+                        <div class="form-group">
+                            <label for="step_data">Data</label>
+                            <textarea id="step_data"
+                                class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary"
+                            id="saveStep">Save changes</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // Função para buscar dados do projeto e dos steps
-        async function fetchProjectAndSteps() {
-            try {
-                // Buscando dados do projeto
-                const projectResponse = await fetch('/api/v1/project/1');
-                const projectData = await projectResponse.json();
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        const apiBaseUrl = "http://127.0.0.1:5000/api/v1";
 
-                // Atualizando o título e a descrição do projeto na página
-                document.getElementById('project-title').innerText = projectData.proj_name;
-                document.getElementById('project-desc').innerText = projectData.proj_desc;
+        // Fetch project details
+        fetch(`${apiBaseUrl}/project/1`)
+            .then(response => response.json())
+            .then(project => {
+                document.getElementById("proj_name").innerText = project.proj_name;
+                document.getElementById("proj_desc").innerText = project.proj_desc;
+                document.getElementById("contract").innerText = project.contract;
 
-                // Buscando dados dos steps
-                const stepsResponse = await fetch('/api/v1/step/');
-                const stepsData = await stepsResponse.json();
+                // Fetch all steps for the project
+                return fetch(`${apiBaseUrl}/step/`);
+            })
+            .then(response => response.json())
+            .then(data => {
+                const stepsContainer = document.getElementById("steps-container");
+                stepsContainer.innerHTML = '';
 
-                // Verifique os dados no console
-                console.log('Steps Data:', stepsData);
+                const steps = data.steps;  // Acesse os steps a partir de data.steps
 
-                // Renderizando os cards dos steps
-                const stepsContainer = document.getElementById('steps-container');
-
-                if (Array.isArray(stepsData.steps)) {  // Verifica se stepsData.steps é um array
-                    stepsData.steps.forEach(step => {
-                        const stepCard = document.createElement('div');
-                        stepCard.classList.add('step-card');
-
-                        // Criando o título do step
-                        const stepTitle = document.createElement('h2');
-                        stepTitle.classList.add('step-title');
-                        stepTitle.innerText = step.step_name;
-
-                        // Criando a data de início do step
-                        const stepDate = document.createElement('p');
-                        stepDate.classList.add('step-date');
-                        stepDate.innerText = `Data de Início: ${new Date(step.created_at).toLocaleDateString()}`;
-
-                        // Adicionando um evento de clique para abrir o modal com as informações do step
-                        stepCard.addEventListener('click', () => openModal(step));
-
-                        // Adicionando título e data ao card
-                        stepCard.appendChild(stepTitle);
-                        stepCard.appendChild(stepDate);
-
-                        // Adicionando o card ao container
+                steps.forEach((step, index) => {
+                    if (step.project_id === 1) { // Certifique-se de que o step pertence ao projeto com id 1
+                        const stepCard = document.createElement("div");
+                        stepCard.className = "step-card card p-3";
+                        stepCard.innerHTML = `
+                            <h5>${step.step_name}</h5>
+                            <p><strong>Start Date:</strong> ${new Date(step.started_at).toLocaleString()}</p>
+                            <p><strong>End Date:</strong> ${step.finished_at ? new Date(step.finished_at).toLocaleString() : 'Ongoing'}</p>
+                        `;
+                        stepCard.addEventListener("click", () => showStepModal(step));
                         stepsContainer.appendChild(stepCard);
-                    });
+
+                        if (index < steps.length - 1) {
+                            const arrow = document.createElement("div");
+                            arrow.className = "arrow";
+                            arrow.innerHTML = "&#x2193;";
+                            stepsContainer.appendChild(arrow);
+                        }
+                    }
+                });
+            });
+
+        // Show modal with step details
+        function showStepModal(step) {
+            document.getElementById("step_name").innerText = step.step_name;
+            document.getElementById("step_desc").innerText = step.step_desc;
+            document.getElementById("started_at").innerText = new Date(step.started_at).toLocaleString();
+            document.getElementById("finished_at").innerText = step.finished_at ? new Date(step.finished_at).toLocaleString() : 'Ongoing';
+            document.getElementById("step_data").value = step.data;
+
+            const saveButton = document.getElementById("saveStep");
+            saveButton.onclick = function() {
+                saveStepData(step.id);
+            };
+
+            const stepModal = new bootstrap.Modal(document.getElementById('stepModal'));
+            stepModal.show();
+        }
+
+        // Save step data
+        function saveStepData(stepId) {
+            const updatedData = document.getElementById("step_data").value;
+
+            fetch(`${apiBaseUrl}/step/${stepId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ data: updatedData })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Step data updated successfully!");
+                    location.reload(); // Refresh the page to reflect changes
                 } else {
-                    console.error("Os dados dos steps não são um array:", stepsData);
+                    alert("Failed to update step data.");
                 }
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-            }
+            });
         }
+    });
 
-        // Função para abrir o modal com as informações do step
-        function openModal(step) {
-            document.getElementById('modal-step-title').innerText = step.step_name;
-            document.getElementById('modal-step-desc').innerText = step.step_desc;
-            document.getElementById('modal-step-created').innerText = `Created At: ${new Date(step.created_at).toLocaleString()}`;
-            document.getElementById('modal-step-finished').innerText = `Finished At: ${step.finished_at ? new Date(step.finished_at).toLocaleString() : 'N/A'}`;
-            document.getElementById('modal-step-active').innerText = `Is Active: ${step.is_active ? 'Yes' : 'No'}`;
-
-            // Renderizar chaves e valores do JSON "data"
-            const dataContainer = document.getElementById('data-container');
-            dataContainer.innerHTML = ''; // Limpa qualquer conteúdo existente
-            if (step.data) {
-                for (const [key, value] of Object.entries(step.data)) {
-                    const dataItem = document.createElement('div');
-                    dataItem.classList.add('data-item');
-                    dataItem.innerHTML = `<span>${key}:</span> ${value}`;
-                    dataContainer.appendChild(dataItem);
-                }
-            } else {
-                dataContainer.innerHTML = '<p>No additional data available.</p>';
-            }
-
-            document.getElementById('stepModal').style.display = 'block';
-        }
-
-        // Fechar o modal ao clicar no botão de fechar
-        document.querySelector('.close').onclick = function () {
-            document.getElementById('stepModal').style.display = 'none';
-        };
-
-        // Fechar o modal ao clicar fora do conteúdo do modal
-        window.onclick = function (event) {
-            const modal = document.getElementById('stepModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        };
-
-        // Chama a função para buscar dados do projeto e steps quando a página carrega
-        fetchProjectAndSteps();
     </script>
-
-</body>
+    </body>
 </html>
