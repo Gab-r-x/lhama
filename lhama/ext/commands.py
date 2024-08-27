@@ -28,7 +28,7 @@ def populate_db():
             started_at=datetime(2024, 8, 19, 13, 0, 0),
             finished_at=datetime(2024, 8, 19, 15, 0, 0),
             is_active=False,
-            data={"Recurso": "R$5milhoes", "Fonte": "Governo do Estado", "Área": "550m²", "Projeto":"https:americalatina.eng.br"}, 
+            data='"Recurso": "R$5milhoes", "Fonte": "Governo do Estado", "Área": "550m²", "Projeto":"https:americalatina.eng.br"', 
             project_id=1
         )
 
@@ -39,7 +39,7 @@ def populate_db():
             started_at=datetime(2024, 8, 20, 13, 0, 0),
             finished_at=datetime(2024, 8, 20, 15, 0, 0),
             is_active=False,
-            data={"Recurso": "R$8milhoes", "Fonte": "Recurso Prefeitura"}, 
+            data='"Recurso": "R$8milhoes", "Fonte": "Recurso Prefeitura"', 
             project_id=1
         )    
 
@@ -50,7 +50,7 @@ def populate_db():
             started_at=datetime(2024, 8, 20, 13, 0, 0),
             finished_at=datetime(2024, 8, 20, 15, 0, 0),
             is_active=True,
-            data={"Link do projeto": "https://americalatina.eng.br", "Link da planilha": "https://americalatina.eng.br"}, 
+            data='"Link do projeto": "https://americalatina.eng.br", "Link da planilha": "https://americalatina.eng.br"', 
             project_id=1
         )    
     

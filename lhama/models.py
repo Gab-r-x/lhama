@@ -8,6 +8,7 @@ class Project(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     proj_name = db.Column(db.String(140))
     proj_desc = db.Column(db.String(512))
+    contract = db.Column(db.String(140))
     started_at = db.Column(db.DateTime)
     finished_at = db.Column(db.DateTime)
 
@@ -21,7 +22,7 @@ class Step(db.Model, SerializerMixin):
     started_at = db.Column(db.DateTime)
     finished_at = db.Column(db.DateTime)
     is_active = db.Column(db.Boolean, default=False)
-    data = db.Column(db.JSON)
+    data = db.Column(db.Text)
     project_id = db.Column(db.Integer)
 
     

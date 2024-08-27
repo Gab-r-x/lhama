@@ -21,6 +21,7 @@ class ProjectResource(Resource):
         new_project = Project(
             proj_name = data['proj_name'],
             proj_desc = data['proj_desc'],
+            contract = data['contract'],
             started_at = datetime(now.year, now.month, now.day, now.hour, now.minute, now.second)
         )
         
@@ -54,6 +55,25 @@ class StepResource(Resource):
         return jsonify(
             {"steps": [step.to_dict() for step in steps]}
         )
+    def post(self):
+        data = request.get_json()
+        if not data or not 'step_name' in data or not 'step_desc' in data or not 'project_id' in data:
+            abort(400, description="Step name, description and project_id are required.")
+
+        now = datetime.now()
+        new_step = Step(
+            step_name = data['step_name'],
+            step_desc = data['step_desc'],
+            started_at = datetime(now.year, now.month, now.day, now.hour, now.minute, now.second),
+            data = data['data'],
+            project_id = data['project_id']
+        )
+        
+        db.session.add(new_step)
+        db.session.commit()
+
+        return make_response(jsonify(new_step.to_dict()), 201)    
+
 
 class StepItemResource(Resource):
     def get(self, step_id):
