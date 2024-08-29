@@ -1,17 +1,29 @@
 from flask import abort, jsonify, request, make_response
 from flask_restful import Resource
 
-from ...models import Project, Step
+from ...models import Project, Step, Contract
 from ...ext.database import db
 from datetime import datetime
 
+class ContractResource(Resource):
+    def get(self):
+        contracts = Contract.query.all() or abort(204)
+        return jsonify(
+            {"contracts": [contract.to_dict() for contract in contracts]}
+        )
 
+class ContractItemResource(Resource):
+    def get(self, contract_id):
+        contract = Contract.query.filter_by(id=contract_id).first() or abort(404)
+        return jsonify(contract.to_dict()
+        )
+        
 class ProjectResource(Resource):
     def get(self):
         # Recupera os parâmetros de consulta da URL
         proj_name = request.args.get('proj_name')
         proj_desc = request.args.get('proj_desc')
-        contract = request.args.get('contract')
+        contract_id = request.args.get('contract')
         # Inicia uma query básica
         query = Project.query
         
@@ -20,10 +32,10 @@ class ProjectResource(Resource):
             query = query.filter(Project.proj_name.ilike(f'%{proj_name}%'))
         if proj_desc:
             query = query.filter(Project.proj_desc.ilike(f'%{proj_desc}%'))
-        if contract:
-            query = query.filter(Project.contract.ilike(f'%{contract}%'))
+        if contract_id:
+            query = query.filter(Project.contract_id.ilike(f'%{contract_id}%'))
 
-        projects = Project.query.all() or abort(204)
+        projects = query.all() or abort(204)
         return jsonify(
             {"projects": [project.to_dict() for project in projects]}
         )

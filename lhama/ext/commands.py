@@ -18,8 +18,14 @@ def drop_db():
 def populate_db():
     """Populate db with sample data"""
     
-    contract = Contract(
+    contract1 = Contract(
             contract_name="ALE-001",
+            started_at=datetime(2024, 8, 19, 13, 0, 0),
+            finished_at=datetime(2024, 8, 19, 15, 0, 0)
+        )
+    
+    contract2 = Contract(
+            contract_name="ALE-002",
             started_at=datetime(2024, 8, 19, 13, 0, 0),
             finished_at=datetime(2024, 8, 19, 15, 0, 0)
         )
@@ -35,7 +41,7 @@ def populate_db():
     project2 = Project(
             proj_name="Segundo Projeto",
             proj_desc="Esse é o primeiro projeto da aplicação Lhama que permite que empresas controlem o fluxo de processos de forma rápida e acessivel",
-            contract_id=1,
+            contract_id=2,
             started_at=datetime(2024, 8, 19, 13, 0, 0),
             finished_at=datetime(2024, 8, 19, 15, 0, 0)
         )
@@ -67,7 +73,8 @@ def populate_db():
             project_id=2
         )    
     
-    db.session.add(contract)
+    db.session.add(contract1)
+    db.session.add(contract2)
     db.session.add(project1)
     db.session.add(project2)
 
