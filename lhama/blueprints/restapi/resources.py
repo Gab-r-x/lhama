@@ -8,6 +8,21 @@ from datetime import datetime
 
 class ProjectResource(Resource):
     def get(self):
+        # Recupera os parâmetros de consulta da URL
+        proj_name = request.args.get('proj_name')
+        proj_desc = request.args.get('proj_desc')
+        contract = request.args.get('contract')
+        # Inicia uma query básica
+        query = Project.query
+        
+        # Adiciona filtros à query com base nos parâmetros de consulta
+        if proj_name:
+            query = query.filter(Project.proj_name.ilike(f'%{proj_name}%'))
+        if proj_desc:
+            query = query.filter(Project.proj_desc.ilike(f'%{proj_desc}%'))
+        if contract:
+            query = query.filter(Project.contract.ilike(f'%{contract}%'))
+
         projects = Project.query.all() or abort(204)
         return jsonify(
             {"projects": [project.to_dict() for project in projects]}
