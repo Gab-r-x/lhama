@@ -3,15 +3,19 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.dialects.postgresql import JSON  # ou use `db.JSON` se não estiver usando PostgreSQL
 
 
+class Contract(db.Model, SerializerMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    contract_name = db.Column(db.String(140))
+    started_at = db.Column(db.DateTime)
+    finished_at = db.Column(db.DateTime)
 
 class Project(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     proj_name = db.Column(db.String(140))
     proj_desc = db.Column(db.String(512))
-    contract = db.Column(db.String(140))
+    contract_id = db.Column(db.Integer)
     started_at = db.Column(db.DateTime)
     finished_at = db.Column(db.DateTime)
-
 
 class Step(db.Model, SerializerMixin):
     datetime_format = '%Y %b %d %H:%M:%S.%f'
